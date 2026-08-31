@@ -1,0 +1,1205 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vale-Refeição · Basic Telecom RH</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
+<style>
+  :root{
+    --navy-deep:#16283e;
+    --navy:#355c85;
+    --navy-soft:#4d7aa8;
+    --blue:#0071c1;
+    --blue-soft:#e3f1fc;
+    --red:#e4231c;
+    --red-soft:#fdeae9;
+    --green:#17b581;
+    --green-soft:#e7faf3;
+    --amber:#ffb443;
+    --amber-soft:#fff4e0;
+    --purple:#8b6fe0;
+    --purple-soft:#f1ecfc;
+    --bg:#f3f4fb;
+    --card:#ffffff;
+    --border:#e7e9f5;
+    --text:#0e1330;
+    --muted:#6a7095;
+    --radius:16px;
+    --radius-sm:10px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(1100px 460px at 90% -10%, rgba(0,113,193,0.14), transparent 60%),
+      radial-gradient(900px 420px at -10% 0%, rgba(228,35,28,0.10), transparent 55%),
+      var(--bg);
+    color:var(--text);
+    font-family:'DM Sans', sans-serif;
+    font-size:14px;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  .display{font-family:'Playfair Display', serif;}
+
+  header{
+    background:#ffffff;
+    color:var(--text);
+    padding:34px 30px 30px;
+    position:relative;
+    border-bottom:1px solid var(--border);
+  }
+  header .top-row{display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; position:relative;}
+  .brand{display:flex; align-items:center; gap:10px;}
+  .brand .mark{width:32px;height:32px;border-radius:9px; background:linear-gradient(135deg, var(--red), var(--blue)); display:flex;align-items:center;justify-content:center; font-family:'DM Sans',sans-serif; font-weight:700; font-size:14px; color:#fff;}
+  .brand .name{font-size:12px; letter-spacing:.06em; color:var(--muted); font-weight:700;}
+  h1{font-family:'Playfair Display', serif; font-weight:700; font-size:32px; margin:16px 0 8px; position:relative; letter-spacing:-0.01em; color:var(--navy);}
+  header p.lede{margin:0; max-width:620px; color:var(--muted); font-size:14.5px; position:relative;}
+  .stat-strip{display:flex; gap:12px; margin-top:22px; flex-wrap:wrap; position:relative;}
+  .stat-chip{
+    background:#fff; border:1px solid var(--border); border-left:4px solid var(--stat-color, var(--blue));
+    border-radius:11px; padding:11px 18px 11px 14px; min-width:140px;
+    box-shadow:0 1px 2px rgba(14,19,48,0.03);
+  }
+  .stat-chip span{display:block; font-size:10.5px; color:var(--muted); letter-spacing:.03em; margin-bottom:3px; font-weight:600; text-transform:uppercase;}
+  .stat-chip b{font-family:'DM Sans',sans-serif; font-size:20px; font-variant-numeric:tabular-nums; color:var(--navy);}
+
+
+  .wrap{max-width:1380px; margin:0 auto; padding:26px 28px 90px;}
+
+  .card{background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:24px 26px; margin-bottom:20px; box-shadow:0 1px 2px rgba(14,19,48,0.04), 0 12px 30px -18px rgba(14,19,48,0.15);}
+  .card h2{font-family:'DM Sans',sans-serif; font-size:15.5px; margin:0 0 18px; display:flex; align-items:center; gap:10px; font-weight:600;}
+  .card h2 .num{background:linear-gradient(135deg, var(--blue), var(--navy-soft)); color:#fff; width:24px;height:24px; border-radius:8px; display:inline-flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; font-family:'DM Sans',sans-serif;}
+  .grid-config{display:grid; grid-template-columns:repeat(auto-fit, minmax(180px,1fr)); gap:16px;}
+  label{display:block; font-size:12px; color:var(--muted); margin-bottom:6px; font-weight:600; letter-spacing:.01em;}
+  input[type=month], input[type=date], input[type=number], input[type=text], select{
+    width:100%; padding:10px 12px; border:1.5px solid var(--border); border-radius:var(--radius-sm);
+    font-family:inherit; font-size:13.5px; color:var(--text); background:#fbfbfe;
+    transition:border-color .12s, background .12s;
+  }
+  input:focus, select:focus{outline:none; border-color:var(--blue); background:#fff;}
+  .info-strip{display:flex; flex-wrap:wrap; gap:10px; margin-top:20px;}
+  .pill{background:var(--blue-soft); border:1px solid #cfe4f5; border-radius:12px; padding:10px 16px; font-size:12px; color:var(--navy-soft); font-weight:500;}
+  .pill b{color:var(--navy-deep); font-size:15px; display:block; font-family:'DM Sans',sans-serif; font-variant-numeric:tabular-nums; margin-top:1px;}
+  .feriados-row{display:flex; gap:10px; align-items:flex-end; margin-top:18px; flex-wrap:wrap;}
+  .feriados-row > div:first-child{flex:0 0 170px;}
+  button{font-family:inherit; cursor:pointer; border:none; border-radius:10px; font-weight:600; font-size:13px; transition:transform .08s, box-shadow .12s;}
+  button:active{transform:translateY(1px);}
+  .btn-primary{background:linear-gradient(135deg, var(--blue), #005a9c); color:#fff; padding:10px 18px; box-shadow:0 8px 18px -8px rgba(0,113,193,0.55);}
+  .btn-primary:hover{box-shadow:0 10px 22px -8px rgba(0,113,193,0.7);}
+  .btn-primary:disabled{background:#c7cbe6; box-shadow:none; cursor:not-allowed;}
+  .btn-dark{background:var(--navy-deep); color:#fff; padding:10px 18px;}
+  .btn-dark:hover{background:var(--navy);}
+  .btn-purple{background:var(--purple); color:#fff; padding:9px 16px; box-shadow:0 8px 16px -8px rgba(139,111,224,0.55);}
+  .btn-purple:hover{background:#7a5cd6;}
+  .btn-ghost{background:#fff; border:1.5px solid var(--border); color:var(--muted); padding:9px 16px;}
+  .btn-ghost:hover{border-color:var(--blue); color:var(--blue);}
+  .chips{display:flex; flex-wrap:wrap; gap:8px; margin-top:14px;}
+  .chip{background:var(--red-soft); color:var(--red); border-radius:20px; padding:6px 10px 6px 14px; font-size:12.5px; display:flex; align-items:center; gap:7px; font-weight:600;}
+  .chip button{background:none; color:var(--red); font-size:14px; line-height:1; padding:0; font-weight:700;}
+
+  .table-scroll{overflow-x:auto; border:1px solid var(--border); border-radius:var(--radius); background:#fff;}
+  table{border-collapse:collapse; width:100%; min-width:1720px;}
+  thead th{background:var(--navy-deep); color:#e7eaf9; text-align:left; padding:12px 10px; font-size:11px; letter-spacing:.02em; font-weight:600; white-space:nowrap; position:sticky; top:0; font-family:'DM Sans',sans-serif;}
+  thead th small{display:block; font-weight:400; color:#8f9ac2; font-size:10px; margin-top:2px; font-family:'DM Sans',sans-serif;}
+  tbody td{padding:7px 8px; border-bottom:1px solid var(--border); vertical-align:middle;}
+  tbody tr:hover{background:#f8f9ff;}
+  tbody tr.just-imported{background:var(--green-soft);}
+  tbody tr.on-ferias{background:var(--amber-soft);}
+  tbody input, tbody select{padding:7px 8px; font-size:13px; min-width:66px; border-radius:8px;}
+  tbody input[type=text]{min-width:150px;}
+  td.name-cell{display:flex; align-items:center; gap:9px; min-width:190px;}
+  .avatar{width:26px;height:26px;border-radius:50%; flex:0 0 26px; background:linear-gradient(135deg, var(--blue), var(--red)); color:#fff; font-size:10.5px; font-weight:700; display:flex; align-items:center; justify-content:center; font-family:'DM Sans',sans-serif;}
+  td.readonly{background:#f7f8ff; font-variant-numeric:tabular-nums; font-weight:700; text-align:right; padding-right:12px; color:var(--navy-soft); white-space:nowrap; font-family:'DM Sans',sans-serif;}
+  td.readonly.final{color:var(--green);}
+  td.center{text-align:center;}
+  .del-btn{background:none; color:var(--muted); font-size:16px; padding:2px 6px; border-radius:6px;}
+  .del-btn:hover{color:var(--red); background:var(--red-soft);}
+  .table-actions{display:flex; justify-content:space-between; align-items:center; padding:14px 4px 0; flex-wrap:wrap; gap:10px;}
+  .hint{font-size:12px; color:var(--muted); margin-top:12px; line-height:1.6;}
+  .totals-bar{position:sticky; bottom:14px; background:linear-gradient(120deg, var(--navy-deep), var(--navy)); color:#fff; border-radius:var(--radius); padding:18px 24px; margin-top:20px; display:flex; flex-wrap:wrap; gap:28px; align-items:center; box-shadow:0 20px 40px -18px rgba(6,14,31,0.55);}
+  .totals-bar .tot-item{min-width:120px;}
+  .totals-bar .tot-item span{display:block; font-size:11px; color:#9aa5d1; margin-bottom:4px;}
+  .totals-bar .tot-item b{font-family:'DM Sans',sans-serif; font-size:20px; font-variant-numeric:tabular-nums;}
+  .totals-bar .tot-item.final b{color:#5cf0b0;}
+  .totals-bar .spacer{flex:1;}
+
+  details.explain{margin-bottom:20px;}
+  details.explain summary{cursor:pointer; font-weight:600; font-size:13.5px; color:var(--navy-soft); padding:15px 20px; background:#fff; border:1px solid var(--border); border-radius:var(--radius); list-style:none; display:flex; align-items:center; gap:8px;}
+  details.explain summary::-webkit-details-marker{display:none;}
+  details.explain summary::before{content:"✦"; color:var(--blue); font-size:12px;}
+  details.explain[open] summary{border-bottom-left-radius:0; border-bottom-right-radius:0;}
+  details.explain .explain-body{background:#fff; border:1px solid var(--border); border-top:none; border-bottom-left-radius:var(--radius); border-bottom-right-radius:var(--radius); padding:18px 24px; font-size:13px; color:var(--muted);}
+  .explain-body ol{padding-left:20px;}
+  .explain-body li{margin-bottom:8px;}
+  .explain-body code{background:var(--blue-soft); padding:1.5px 6px; border-radius:5px; font-size:12px; color:var(--navy-soft); font-weight:600;}
+
+  .import-grid{display:grid; grid-template-columns:1fr 1fr; gap:18px;}
+  @media (max-width:860px){.import-grid{grid-template-columns:1fr;}}
+  .import-zone{border:1.5px dashed #c7cdec; border-radius:var(--radius); padding:24px; text-align:center; background:linear-gradient(160deg,#fbfbff,#f4f5fd); transition:border-color .15s, background .15s;}
+  .import-zone.drag{border-color:var(--blue); background:var(--blue-soft);}
+  .import-zone input[type=file]{display:none;}
+  .import-zone .browse{color:var(--blue); font-weight:700; text-decoration:underline; cursor:pointer;}
+  .import-zone .ic{font-size:22px; margin-bottom:6px;}
+  .import-summary{margin-top:16px; border:1px solid var(--border); border-radius:var(--radius); overflow:hidden;}
+  .import-summary table{min-width:0; width:100%;}
+  .import-summary thead th{background:var(--navy-soft); font-size:11px; padding:9px 10px; position:static;}
+  .import-summary td{padding:8px 10px; font-size:12.5px; border-bottom:1px solid var(--border); white-space:normal;}
+  .badge{display:inline-block; padding:3px 9px; border-radius:20px; font-size:11px; font-weight:700;}
+  .badge.new{background:var(--green-soft); color:var(--green);}
+  .badge.upd{background:var(--amber-soft); color:#a35c00;}
+  .import-note{font-size:12px; color:var(--muted); margin-top:12px; line-height:1.55;}
+
+  .filter-bar{display:flex; flex-wrap:wrap; align-items:center; gap:10px; margin-bottom:14px;}
+  .filter-bar #filterQ{flex:1 1 220px; min-width:180px;}
+  .filter-bar select{width:auto; min-width:170px;}
+  .filter-check{display:flex; align-items:center; gap:6px; font-size:12.5px; color:var(--muted); font-weight:500; cursor:pointer; white-space:nowrap;}
+  .filter-check input{width:auto;}
+  .filter-check small{color:#9aa0bd;}
+  .filter-count{font-size:12px; color:var(--muted); margin-left:auto; white-space:nowrap;}
+  @media (max-width:640px){
+    header{padding:28px 18px;}
+    h1{font-size:26px;}
+    .wrap{padding:18px 14px 70px;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="top-row">
+    <div class="brand">
+      <div class="mark">BT</div>
+      <div class="name">BASIC TELECOM · RECURSOS HUMANOS</div>
+    </div>
+  </div>
+  <h1 class="display">Vale-Refeição</h1>
+  <p class="lede">Carregamento por escala, abatimento do período de contagem e coparticipação — com importação do Convenia, do R09 do PontoTel e tratamento de férias, licenças e banco de horas.</p>
+  <div class="stat-strip">
+    <div class="stat-chip" style="--stat-color:var(--blue);"><span>Colaboradores</span><b id="hdrColab">0</b></div>
+    <div class="stat-chip" style="--stat-color:var(--green);"><span>Dias úteis 6x1</span><b id="hdrUteis6x1">–</b></div>
+    <div class="stat-chip" style="--stat-color:var(--amber);"><span>Dias úteis 5x2</span><b id="hdrUteis5x2">–</b></div>
+    <div class="stat-chip" style="--stat-color:var(--red);"><span>Valor final total</span><b id="hdrFinal">R$ 0</b></div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <details class="explain">
+    <summary>Como funciona esta calculadora</summary>
+    <div class="explain-body">
+      <ol>
+        <li><b>Dias úteis</b> são calculados automaticamente para o mês de carregamento: segunda a sábado para <code>6x1</code> e cargos de confiança, segunda a sexta para <code>5x2</code> (RH, Frota) e para <code>Estoque</code> — descontando os feriados cadastrados.</li>
+        <li><b>Estoque</b> é 6x1 na prática, mas o sábado é sempre turno reduzido (até 4h) e programado — por isso a base de dias úteis conta só de segunda a sexta. O sábado não desconta nunca; só vira dia extra (soma) se o colaborador ultrapassar 4h10 naquele sábado.</li>
+        <li>O <b>período de contagem</b> (abatimento) é do dia 20 do mês retrasado ao dia 19 do mês passado — igual ao filtro do R09 no PontoTel. Nele, contam como desconto: <b>falta, atestado, suspensão, banco de horas e licença</b> (qualquer motivo que faça a pessoa não trabalhar). <b>Atestado ou licença que caem num domingo/folga não descontam</b> — a pessoa já não trabalharia mesmo assim.</li>
+        <li><b>Férias funcionam diferente</b>: quando o R09 traz "Férias" na coluna Rotina Esperada dentro do período de contagem, a calculadora reconhece e <u>não conta como falta nem como desconto</u> — só registra na observação. Separadamente, pra quem entra de férias <u>dentro do mês de carregamento atual</u>, preencha o campo "Início de férias" do colaborador — a calculadora carrega o VR só dos dias úteis antes da data informada.</li>
+        <li>Importe o <b>Convenia</b> (export do RH) para trazer todos os colaboradores — nome, CPF, nascimento, cargo, departamento e data de admissão — com a escala sugerida e sinalização de admissão recente ("Novo").</li>
+        <li>Importe o <b>R09</b> (PontoTel) para casar por matrícula/CPF ou nome e preencher automaticamente os descontos/adicionais — a <b>Observação</b> vem detalhada com as datas de cada ocorrência.</li>
+        <li>Quem não aparece no R09 fica com o carregamento integral (sem desconto), marcado para revisão — normal pra cargos de confiança ou quem ainda não bate ponto.</li>
+        <li>Para <b>Técnico VT</b>, o VR é pago só pelos dias efetivamente trabalhados (&gt;4h) — não usa a base de dias úteis do mês. Ao importar o R09, a calculadora já conta esses dias trabalhados e preenche "Dias úteis" sozinha; o campo continua editável se precisar ajustar manualmente.</li>
+        <li>A coparticipação de 20% é calculada sobre o total apurado, em coluna separada — não reduz o valor carregado no cartão, é a base do desconto em folha.</li>
+        <li>O botão <b>"Exportar Excel (3 abas, colorido)"</b> gera o arquivo pronto pra fechamento: aba 1 pra subir no sistema de benefício (CNPJ, nome, CPF, nascimento, valor), aba 2 com o carregamento detalhado (dias, descontos, coparticipação, observação) e aba 3 com o R09 dia a dia colorido por categoria.</li>
+      </ol>
+    </div>
+  </details>
+
+  <div class="card">
+    <h2><span class="num">1</span>Parâmetros do carregamento</h2>
+    <div class="grid-config">
+      <div>
+        <label for="mesCarregamento">Mês de carregamento</label>
+        <input type="month" id="mesCarregamento">
+      </div>
+      <div>
+        <label for="valorDiario">Valor diário do VR (R$)</label>
+        <input type="number" id="valorDiario" step="0.01" min="0" value="25.21">
+      </div>
+      <div>
+        <label for="copart">Coparticipação (%)</label>
+        <input type="number" id="copart" step="1" min="0" max="100" value="20">
+      </div>
+      <div>
+        <label for="cnpjPadrao">CNPJ da empresa</label>
+        <input type="text" id="cnpjPadrao" value="07.332.983/0002-93">
+      </div>
+    </div>
+
+    <div class="feriados-row">
+      <div>
+        <label for="feriadoInput">Adicionar feriado</label>
+        <input type="date" id="feriadoInput">
+      </div>
+      <button class="btn-ghost" id="addFeriado">+ Adicionar feriado</button>
+      <button class="btn-dark" id="recalcAll" style="margin-left:auto;">Recalcular dias úteis de todos</button>
+    </div>
+    <div class="chips" id="feriadosChips"></div>
+
+    <div class="info-strip">
+      <div class="pill">Dias úteis 6x1 (seg–sáb)<b id="infoUteis6x1">–</b></div>
+      <div class="pill">Dias úteis 5x2 (seg–sex)<b id="infoUteis5x2">–</b></div>
+      <div class="pill">Período de contagem<b id="infoPeriodo">–</b></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; margin-bottom:18px;">
+      <h2 style="margin-bottom:0;"><span class="num">2</span>Importar dados</h2>
+      <button class="btn-purple" id="resetData" title="Apaga todos os colaboradores da tabela para começar um novo carregamento do zero">↺ Zerar e importar novo arquivo</button>
+    </div>
+    <div class="import-grid">
+      <div>
+        <div class="import-zone" id="dropZoneConv">
+          <div class="ic">👥</div>
+          <p style="margin:0 0 6px; font-weight:700;">Convenia (roster completo)</p>
+          <p style="margin:0 0 8px; font-size:12px; color:var(--muted);">Arraste aqui ou <span class="browse" id="browseConv">selecione o arquivo</span></p>
+          <p style="margin:0; font-size:11px; color:var(--muted);">Export do RH: nome, nascimento, CPF, CNPJ, cargo, departamento, admissão</p>
+          <input type="file" id="fileInputConv" accept=".xls,.xlsx,.csv">
+        </div>
+      </div>
+      <div>
+        <div class="import-zone" id="dropZoneR09">
+          <div class="ic">🕒</div>
+          <p style="margin:0 0 6px; font-weight:700;">R09 (PontoTel)</p>
+          <p style="margin:0 0 8px; font-size:12px; color:var(--muted);">Arraste aqui ou <span class="browse" id="browseR09">selecione o arquivo</span></p>
+          <p style="margin:0; font-size:11px; color:var(--muted);">Gestão → Relatórios → R09, período de contagem (20 a 19)</p>
+          <input type="file" id="fileInputR09" accept=".xls,.xlsx,.csv">
+        </div>
+      </div>
+    </div>
+    <div id="importSummaryBox"></div>
+    <p class="import-note">O R09 classifica cada dia em: falta, atestado, suspensão, banco de horas, licença (descontam) · menos de 4h10 (desconta) · DSR/feriado trabalhado (soma) · atestado/licença em domingo-folga (não desconta, mas fica registrado) · férias no período (ignorado de propósito — ver item 3 do "como funciona"). Se o texto real do PontoTel para banco de horas ou licença for diferente do que a calculadora reconhece, me avise para eu ajustar a busca.</p>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">3</span>Colaboradores</h2>
+    <div class="filter-bar">
+      <input type="text" id="filterQ" placeholder="Buscar por nome ou CPF/matrícula…">
+      <select id="filterEscala">
+        <option value="">Todas as escalas</option>
+        <option value="6x1">6x1</option>
+        <option value="5x2">5x2 (RH/Frota)</option>
+        <option value="estoque">Estoque (6x1, sábado até 4h)</option>
+        <option value="confianca">Cargo de confiança</option>
+        <option value="vt">Técnico VT</option>
+      </select>
+      <label class="filter-check"><input type="checkbox" id="filterPend"> Só pendências <small>(férias, escala a confirmar, novo)</small></label>
+      <span class="filter-count" id="filterCount"></span>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th style="min-width:190px;">Colaborador</th>
+            <th>CPF/Matrícula</th>
+            <th style="min-width:150px;">Escala</th>
+            <th style="min-width:130px;">Início de férias<small>opcional</small></th>
+            <th>Dias úteis<small>auto / editável</small></th>
+            <th>Faltas/Atest./ Licença/BH<small>descontam</small></th>
+            <th>Dias &lt;4h10<small>descontam</small></th>
+            <th>DSR/Feriado trab.<small>somam</small></th>
+            <th>Quant. dias<small>calculado</small></th>
+            <th>Valor/dia (R$)</th>
+            <th>Total<small>calculado</small></th>
+            <th>Desc. copart.<small>calculado</small></th>
+            <th>Valor final<small>calculado</small></th>
+            <th style="min-width:220px;">Observação<small>detalhada</small></th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="rowsBody"></tbody>
+      </table>
+    </div>
+    <div class="table-actions">
+      <button class="btn-primary" id="addRow">+ Adicionar colaborador</button>
+      <div style="display:flex; gap:10px;">
+        <button class="btn-ghost" id="exportCsv">Exportar CSV</button>
+        <button class="btn-dark" id="exportXlsx">Exportar Excel (3 abas, colorido)</button>
+      </div>
+    </div>
+    <p class="hint">Para <b>Técnico VT</b>: falta/atestado/BH, dias &lt;4h e DSR ficam bloqueados — preencha só "Dias úteis" com os dias efetivamente trabalhados. Linhas em amarelo têm férias no mês de carregamento (dias úteis já ajustados) ou escala pendente de confirmação.</p>
+  </div>
+
+  <div class="totals-bar">
+    <div class="tot-item"><span>Colaboradores</span><b id="totColab">0</b></div>
+    <div class="tot-item"><span>Total de dias pagos</span><b id="totDias">0</b></div>
+    <div class="tot-item"><span>Total apurado</span><b id="totBruto">R$ 0,00</b></div>
+    <div class="tot-item"><span>Desconto coparticipação</span><b id="totDesc">R$ 0,00</b></div>
+    <div class="spacer"></div>
+    <div class="tot-item final"><span>Valor final a carregar</span><b id="totFinal">R$ 0,00</b></div>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+
+  let feriados = [];
+  let rows = [];
+  let rowSeq = 0;
+
+  const mesInput = $('mesCarregamento');
+  const now = new Date();
+  mesInput.value = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0');
+
+  function fmtMoney(v){ return 'R$ ' + (v||0).toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2}); }
+  function fmtDate(d){ return d.toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit', year:'numeric'}); }
+  function fmtDateShort(d){ return d.toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit'}); }
+  function getMesAno(){ const [y,m] = mesInput.value.split('-').map(Number); return {year:y, month:m}; }
+  function initials(name){
+    const parts = (name||'').trim().split(/\s+/).filter(Boolean);
+    if(!parts.length) return '?';
+    return (parts[0][0] + (parts[parts.length-1][0]||'')).toUpperCase();
+  }
+
+  function diasUteisNoMes(year, month, tipo, ateDiaExclusive){
+    const daysInMonth = new Date(year, month, 0).getDate();
+    const limite = ateDiaExclusive ? Math.min(ateDiaExclusive - 1, daysInMonth) : daysInMonth;
+    let count = 0;
+    for(let d=1; d<=limite; d++){
+      const date = new Date(year, month-1, d);
+      const dow = date.getDay();
+      const isBusinessDow = tipo === '5x2' ? (dow>=1 && dow<=5) : (dow>=1 && dow<=6);
+      if(!isBusinessDow) continue;
+      const iso = date.toISOString().slice(0,10);
+      if(feriados.includes(iso)) continue;
+      count++;
+    }
+    return count;
+  }
+
+  function periodoContagem(year, month){
+    let startMonth = month - 2, startYear = year;
+    if(startMonth <= 0){ startMonth += 12; startYear -= 1; }
+    let endMonth = month - 1, endYear = year;
+    if(endMonth <= 0){ endMonth += 12; endYear -= 1; }
+    const start = new Date(startYear, startMonth-1, 20);
+    const end = new Date(endYear, endMonth-1, 19);
+    return {start, end};
+  }
+
+  function refreshInfoStrip(){
+    const {year, month} = getMesAno();
+    if(!year || !month) return;
+    const u6 = diasUteisNoMes(year, month, '6x1');
+    const u5 = diasUteisNoMes(year, month, '5x2');
+    $('infoUteis6x1').textContent = u6;
+    $('infoUteis5x2').textContent = u5;
+    $('hdrUteis6x1').textContent = u6;
+    $('hdrUteis5x2').textContent = u5;
+    const {start, end} = periodoContagem(year, month);
+    $('infoPeriodo').textContent = fmtDate(start) + ' a ' + fmtDate(end);
+  }
+
+  function renderFeriados(){
+    const box = $('feriadosChips');
+    box.innerHTML = '';
+    feriados.slice().sort().forEach(f => {
+      const [y,m,d] = f.split('-');
+      const chip = document.createElement('div');
+      chip.className = 'chip';
+      chip.innerHTML = `<span>${d}/${m}/${y}</span>`;
+      const btn = document.createElement('button');
+      btn.textContent = '×'; btn.title = 'Remover feriado';
+      btn.onclick = () => { feriados = feriados.filter(x => x!==f); renderFeriados(); refreshInfoStrip(); };
+      chip.appendChild(btn);
+      box.appendChild(chip);
+    });
+  }
+
+  $('addFeriado').onclick = () => {
+    const v = $('feriadoInput').value;
+    if(!v) return;
+    if(!feriados.includes(v)){ feriados.push(v); renderFeriados(); refreshInfoStrip(); }
+    $('feriadoInput').value = '';
+  };
+  mesInput.addEventListener('change', refreshInfoStrip);
+
+  function escalaTipo(escala){ return (escala === '5x2' || escala === 'estoque') ? '5x2' : '6x1'; }
+
+  // ---- gestão de segmentos da Observação ----
+  function setObsSegment(r, tag, text){
+    const marker = `[${tag}]`;
+    let segments = (r.obs||'').split(' | ').filter(s => s && !s.startsWith(marker));
+    if(text) segments.push(`${marker} ${text}`);
+    r.obs = segments.join(' | ');
+  }
+
+  function computeDiasUteis(r, year, month){
+    if(r.escala === 'vt') return r.diasUteis; // manual, nao recalcula
+    if(r.feriasInicio){
+      const [fy, fm, fd] = r.feriasInicio.split('-').map(Number);
+      if(fy === year && fm === month){
+        const du = diasUteisNoMes(year, month, escalaTipo(r.escala), fd);
+        setObsSegment(r, 'Férias', `A partir de ${String(fd).padStart(2,'0')}/${String(fm).padStart(2,'0')}/${fy} — carregamento parcial (${du} dias úteis)`);
+        return du;
+      }
+    }
+    setObsSegment(r, 'Férias', '');
+    return diasUteisNoMes(year, month, escalaTipo(r.escala));
+  }
+
+  function newRow(){
+    rowSeq++;
+    return {
+      id: rowSeq, nome:'', matricula:'', escala:'6x1', flag:false, feriasInicio:'',
+      cnpj:'', nascimento:'', admissao:'', cargo:'', departamento:'', feriasR09:0,
+      diasUteis:0, faltas:0, menos4h:0, dsr:0,
+      valorDia: parseFloat($('valorDiario').value) || 0, obs:''
+    };
+  }
+
+  function addRow(prefill){
+    const r = Object.assign(newRow(), prefill||{});
+    const {year, month} = getMesAno();
+    if(year && month){ r.diasUteis = computeDiasUteis(r, year, month); }
+    rows.push(r);
+    renderRows();
+    return r;
+  }
+
+  function calcRow(r){
+    const copart = (parseFloat($('copart').value)||0)/100;
+    let quantDias;
+    if(r.escala === 'vt'){ quantDias = r.diasUteis; }
+    else { quantDias = r.diasUteis - r.faltas - r.menos4h + r.dsr; }
+    if(quantDias < 0) quantDias = 0;
+    const total = quantDias * r.valorDia;
+    const desc = total * copart;
+    const final = total - desc;
+    return {quantDias, total, desc, final};
+  }
+
+  let filterState = {q:'', escala:'', pend:false};
+  let currentVisible = [];
+  let lastR09Rows = [];
+  let lastR09Periodo = {min:null, max:null};
+
+  function isPendente(r){
+    return !!r.flag || !!r.feriasInicio || (r.obs||'').includes('[Admissão] Novo');
+  }
+
+  function passesFilter(r){
+    if(filterState.q){
+      const q = filterState.q.toLowerCase();
+      const hay = ((r.nome||'') + ' ' + (r.matricula||'')).toLowerCase();
+      if(!hay.includes(q)) return false;
+    }
+    if(filterState.escala && r.escala !== filterState.escala) return false;
+    if(filterState.pend && !isPendente(r)) return false;
+    return true;
+  }
+
+  function renderRows(){
+    const body = $('rowsBody');
+    body.innerHTML = '';
+    currentVisible = rows.filter(passesFilter);
+    $('filterCount').textContent = (currentVisible.length === rows.length)
+      ? `${rows.length} colaborador(es)`
+      : `mostrando ${currentVisible.length} de ${rows.length}`;
+    currentVisible.forEach(r => {
+      const isVT = r.escala === 'vt';
+      const {quantDias, total, desc, final} = calcRow(r);
+      const tr = document.createElement('tr');
+      if(r._justImported) tr.className = 'just-imported';
+      if(r.feriasInicio) tr.className = (tr.className ? tr.className+' ' : '') + 'on-ferias';
+      tr.innerHTML = `
+        <td>
+          <div class="name-cell">
+            <div class="avatar">${initials(r.nome)}</div>
+            <input type="text" data-field="nome" placeholder="Nome do colaborador" value="${(r.nome||'').replace(/"/g,'&quot;')}" style="min-width:130px;">
+          </div>
+        </td>
+        <td><input type="text" data-field="matricula" placeholder="—" value="${(r.matricula||'').replace(/"/g,'&quot;')}" style="min-width:90px;"></td>
+        <td>
+          <select data-field="escala" style="${r.flag ? 'background:var(--amber-soft);' : ''}">
+            <option value="6x1" ${r.escala==='6x1'?'selected':''}>6x1 (padrão)</option>
+            <option value="5x2" ${r.escala==='5x2'?'selected':''}>5x2 (RH/Frota)</option>
+            <option value="estoque" ${r.escala==='estoque'?'selected':''}>Estoque (6x1, sábado até 4h)</option>
+            <option value="confianca" ${r.escala==='confianca'?'selected':''}>Cargo de confiança (6x1)</option>
+            <option value="vt" ${r.escala==='vt'?'selected':''}>Técnico VT</option>
+          </select>
+        </td>
+        <td><input type="date" data-field="feriasInicio" value="${r.feriasInicio||''}" ${isVT?'disabled':''}></td>
+        <td><input type="number" data-field="diasUteis" min="0" value="${r.diasUteis}" title="${isVT ? 'Dias efetivamente trabalhados (>4h)' : 'Dias úteis do mês'}"></td>
+        <td><input type="number" data-field="faltas" min="0" value="${r.faltas}" ${isVT?'disabled':''}></td>
+        <td><input type="number" data-field="menos4h" min="0" value="${r.menos4h}" ${isVT?'disabled':''}></td>
+        <td><input type="number" data-field="dsr" min="0" value="${r.dsr}" ${isVT?'disabled':''}></td>
+        <td class="readonly">${quantDias}</td>
+        <td><input type="number" data-field="valorDia" min="0" step="0.01" value="${r.valorDia}"></td>
+        <td class="readonly">${fmtMoney(total)}</td>
+        <td class="readonly">${fmtMoney(desc)}</td>
+        <td class="readonly final">${fmtMoney(final)}</td>
+        <td><input type="text" data-field="obs" placeholder="—" value="${(r.obs||'').replace(/"/g,'&quot;')}" style="min-width:210px;"></td>
+        <td class="center"><button class="del-btn" title="Remover">✕</button></td>
+      `;
+      tr.querySelectorAll('[data-field]').forEach(el => {
+        el.addEventListener('input', () => {
+          const field = el.getAttribute('data-field');
+          r[field] = (el.type === 'number') ? (parseFloat(el.value)||0) : el.value;
+          if(field === 'nome'){
+            tr.querySelector('.avatar').textContent = initials(r.nome);
+          }
+          if(field === 'escala'){
+            r.flag = false;
+            const {year, month} = getMesAno();
+            if(year && month) r.diasUteis = computeDiasUteis(r, year, month);
+            renderRows();
+          } else if(field === 'feriasInicio'){
+            const {year, month} = getMesAno();
+            if(year && month) r.diasUteis = computeDiasUteis(r, year, month);
+            renderRows();
+          } else {
+            updateCellsOnly();
+          }
+        });
+      });
+      tr.querySelector('.del-btn').addEventListener('click', () => {
+        rows = rows.filter(x => x.id !== r.id);
+        renderRows();
+      });
+      body.appendChild(tr);
+    });
+    updateTotals();
+  }
+
+  function updateCellsOnly(){
+    const body = $('rowsBody');
+    [...body.children].forEach((tr, i) => {
+      const r = currentVisible[i];
+      if(!r) return;
+      const {quantDias, total, desc, final} = calcRow(r);
+      const tds = tr.querySelectorAll('td.readonly');
+      tds[0].textContent = quantDias;
+      tds[1].textContent = fmtMoney(total);
+      tds[2].textContent = fmtMoney(desc);
+      tds[3].textContent = fmtMoney(final);
+    });
+    updateTotals();
+  }
+
+  function updateTotals(){
+    let dias=0, bruto=0, desc=0, final=0;
+    rows.forEach(r => { const c = calcRow(r); dias+=c.quantDias; bruto+=c.total; desc+=c.desc; final+=c.final; });
+    $('totColab').textContent = rows.length;
+    $('totDias').textContent = dias;
+    $('totBruto').textContent = fmtMoney(bruto);
+    $('totDesc').textContent = fmtMoney(desc);
+    $('totFinal').textContent = fmtMoney(final);
+    $('hdrColab').textContent = rows.length;
+    $('hdrFinal').textContent = fmtMoney(final);
+  }
+
+  $('filterQ').addEventListener('input', e => { filterState.q = e.target.value; renderRows(); });
+  $('filterEscala').addEventListener('change', e => { filterState.escala = e.target.value; renderRows(); });
+  $('filterPend').addEventListener('change', e => { filterState.pend = e.target.checked; renderRows(); });
+
+  $('addRow').onclick = () => addRow();
+  $('recalcAll').onclick = () => {
+    const {year, month} = getMesAno();
+    if(!year || !month) return;
+    rows.forEach(r => { r.diasUteis = computeDiasUteis(r, year, month); });
+    renderRows();
+  };
+  $('valorDiario').addEventListener('change', refreshInfoStrip);
+  $('copart').addEventListener('input', updateCellsOnly);
+
+  $('exportCsv').onclick = () => {
+    const {year, month} = getMesAno();
+    const headers = ['Nome','CPF/Matricula','Escala','Inicio ferias','Dias Uteis','Faltas/Atestados/Licenca/BH','Dias <4h10','DSR/Feriados','Quant. Dias','Valor/dia','Total','Desc. Coparticipacao','Valor Final','Observacao'];
+    const escalaLabel = {'6x1':'6x1','5x2':'5x2','confianca':'Cargo de confianca (6x1)','vt':'Tecnico VT'};
+    const lines = [headers.join(';')];
+    rows.filter(r => (r.nome||'').trim()).forEach(r => {
+      const c = calcRow(r);
+      lines.push([r.nome, r.matricula, escalaLabel[r.escala], r.feriasInicio||'', r.diasUteis, r.faltas, r.menos4h, r.dsr,
+        c.quantDias, r.valorDia.toFixed(2).replace('.',','), c.total.toFixed(2).replace('.',','),
+        c.desc.toFixed(2).replace('.',','), c.final.toFixed(2).replace('.',','), r.obs
+      ].map(v => `"${String(v).replace(/"/g,'""')}"`).join(';'));
+    });
+    const blob = new Blob(['\uFEFF' + lines.join('\n')], {type:'text/csv;charset=utf-8;'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const mesStr = (year && month) ? `${String(month).padStart(2,'0')}-${year}` : 'export';
+    a.href = url; a.download = `contagem-vr-${mesStr}.csv`; a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const XCOL = {
+    navyDeep:'FF060E1F', navy:'FF0B1C3D', navySoft:'FF152D5C',
+    blue:'FF0071C1', blueSoft:'FFE3F1FC',
+    red:'FFEF3F5F', redSoft:'FFFFEEF1',
+    green:'FF17B581', greenSoft:'FFE7FAF3',
+    amber:'FFC97A00', amberSoft:'FFFFF4E0',
+    grey:'FF6A7095', greySoft:'FFEDEFF4',
+    border:'FFE0E3F0', white:'FFFFFFFF'
+  };
+  const XBORDER = {
+    top:{style:'thin', color:{argb:XCOL.border}}, left:{style:'thin', color:{argb:XCOL.border}},
+    bottom:{style:'thin', color:{argb:XCOL.border}}, right:{style:'thin', color:{argb:XCOL.border}}
+  };
+  function xTitle(ws, text, ncols){
+    ws.mergeCells(1,1,1,ncols);
+    const c = ws.getCell(1,1);
+    c.value = text;
+    c.font = {name:'Calibri', size:14, bold:true, color:{argb:XCOL.white}};
+    c.fill = {type:'pattern', pattern:'solid', fgColor:{argb:XCOL.navyDeep}};
+    c.alignment = {vertical:'middle', horizontal:'left', indent:1};
+    ws.getRow(1).height = 26;
+  }
+  function xHeaderRow(ws, rowNum, ncols){
+    const row = ws.getRow(rowNum);
+    row.height = 26;
+    for(let c=1;c<=ncols;c++){
+      const cell = row.getCell(c);
+      cell.font = {bold:true, color:{argb:XCOL.white}, size:10, name:'Calibri'};
+      cell.fill = {type:'pattern', pattern:'solid', fgColor:{argb:XCOL.navy}};
+      cell.alignment = {vertical:'middle', horizontal:'center', wrapText:true};
+      cell.border = XBORDER;
+    }
+  }
+  function xBodyRow(ws, rowNum, ncols, stripe){
+    const row = ws.getRow(rowNum);
+    for(let c=1;c<=ncols;c++){
+      const cell = row.getCell(c);
+      cell.font = {size:10, name:'Calibri'};
+      cell.border = XBORDER;
+      if(stripe) cell.fill = {type:'pattern', pattern:'solid', fgColor:{argb:XCOL.greySoft}};
+    }
+  }
+  function xTotalRow(ws, rowNum, ncols){
+    const row = ws.getRow(rowNum);
+    row.height = 22;
+    for(let c=1;c<=ncols;c++){
+      const cell = row.getCell(c);
+      cell.font = {bold:true, color:{argb:XCOL.white}, size:10, name:'Calibri'};
+      cell.fill = {type:'pattern', pattern:'solid', fgColor:{argb:XCOL.navyDeep}};
+      cell.border = XBORDER;
+    }
+  }
+  function feriasText(rr){
+    const parts = [];
+    if(rr.feriasInicio){
+      const [fy,fm,fd] = rr.feriasInicio.split('-').map(Number);
+      parts.push(`A partir de ${String(fd).padStart(2,'0')}/${String(fm).padStart(2,'0')}/${fy}`);
+    }
+    if(rr.feriasR09){ parts.push(`${rr.feriasR09} dia(s) no período de contagem`); }
+    return parts.join(' · ');
+  }
+
+  function colLetter(n){
+    let s = '';
+    while(n > 0){ const m = (n-1) % 26; s = String.fromCharCode(65+m) + s; n = Math.floor((n-1)/26); }
+    return s;
+  }
+
+  const ESCALA_FILL = {'6x1':XCOL.blueSoft, '5x2':XCOL.greenSoft, 'estoque':XCOL.greenSoft, 'confianca':XCOL.amberSoft, 'vt':XCOL.redSoft};
+  const ESCALA_LABEL_X = {'6x1':'6x1','5x2':'5x2 (RH/Frota)','estoque':'Estoque (6x1, sábado até 4h)','confianca':'Cargo de confiança (6x1)','vt':'Técnico VT'};
+
+  async function exportXlsxStyled(){
+    const {year, month} = getMesAno();
+    const mesStr = (year && month) ? `${String(month).padStart(2,'0')}-${year}` : 'export';
+    const cnpjPadrao = ($('cnpjPadrao').value || '').trim();
+    const rows_ = rows.filter(r => (r.nome||'').trim()); // ignora linhas em branco na exportação
+    const wb = new ExcelJS.Workbook();
+    wb.creator = 'Basic Telecom RH';
+    wb.created = new Date();
+
+    // ================= ABA 1 — Contagem Benefício =================
+    const ws1 = wb.addWorksheet('Contagem Beneficio');
+    const cols1 = ['CNPJ','Nome completo','CPF','Data de nascimento','Data de admissão','Departamento','Valor do carregamento (R$)'];
+    ws1.columns = [{width:20},{width:36},{width:18},{width:18},{width:18},{width:22},{width:24}];
+    xTitle(ws1, `VALE-REFEIÇÃO · CARREGAMENTO ${mesStr} — UPLOAD SISTEMA DE BENEFÍCIO`, cols1.length);
+    ws1.getRow(2).getCell(1).value = `Total de colaboradores: ${rows_.length}`;
+    ws1.mergeCells(2,1,2,cols1.length);
+    ws1.getRow(2).getCell(1).font = {italic:true, size:9.5, color:{argb:XCOL.grey}};
+    cols1.forEach((h,i) => ws1.getRow(4).getCell(i+1).value = h);
+    xHeaderRow(ws1, 4, cols1.length);
+    let r = 5;
+    rows_.forEach((rr, idx) => {
+      const c = calcRow(rr);
+      const row = ws1.getRow(r);
+      row.getCell(1).value = rr.cnpj || cnpjPadrao;
+      row.getCell(2).value = rr.nome;
+      row.getCell(3).value = rr.matricula;
+      row.getCell(4).value = rr.nascimento;
+      row.getCell(5).value = rr.admissao;
+      row.getCell(6).value = rr.departamento;
+      row.getCell(7).value = { formula: `'Carregamento VR'!N${r}`, result: Number(c.total.toFixed(2)) };
+      row.getCell(7).numFmt = '#,##0.00';
+      xBodyRow(ws1, r, cols1.length, idx % 2 === 1);
+      r++;
+    });
+    ws1.mergeCells(r,1,r,6);
+    ws1.getRow(r).getCell(1).value = 'TOTAL GERAL';
+    ws1.getRow(r).getCell(7).value = { formula: `SUM(G5:G${r-1})` };
+    ws1.getRow(r).getCell(7).numFmt = '#,##0.00';
+    xTotalRow(ws1, r, cols1.length);
+    ws1.views = [{state:'frozen', ySplit:4}];
+    ws1.autoFilter = `A4:${colLetter(cols1.length)}4`;
+
+    // ================= ABA 2 — Carregamento Vale-Refeição (geral) =================
+    const ws2 = wb.addWorksheet('Carregamento VR');
+    const cols2 = ['Nome','CPF','Data de nascimento','Data de admissão','Departamento','Escala','Dias úteis',
+      'Faltas/Atest./Licença/BH','Dias <4h10','Férias','DSR/Feriado trab.','Quant. dias','Valor/dia (R$)',
+      'Total (R$)','Coparticipação (R$)','Observação'];
+    ws2.columns = [{width:30},{width:16},{width:16},{width:16},{width:18},{width:22},{width:10},
+      {width:16},{width:11},{width:22},{width:14},{width:11},{width:12},{width:13},{width:16},{width:44}];
+    xTitle(ws2, `CARREGAMENTO VALE-REFEIÇÃO · ${mesStr} · BASIC TELECOM RH`, cols2.length);
+    ws2.getRow(2).getCell(1).value = 'Coparticipação (%):';
+    ws2.getRow(2).getCell(1).font = {bold:true, size:9.5, color:{argb:XCOL.navy}};
+    const copartCell = 'B2';
+    ws2.getRow(2).getCell(2).value = (parseFloat($('copart').value)||20)/100;
+    ws2.getRow(2).getCell(2).numFmt = '0%';
+    ws2.getRow(2).getCell(2).font = {bold:true, size:9.5, color:{argb:XCOL.blue}};
+    ws2.mergeCells(2,3,2,cols2.length);
+    ws2.getRow(2).getCell(3).value = 'Preenchido a partir do Convenia + R09 · dias úteis, faltas e valor/dia são editáveis; o resto recalcula sozinho';
+    ws2.getRow(2).getCell(3).font = {italic:true, size:9.5, color:{argb:XCOL.grey}};
+    cols2.forEach((h,i) => ws2.getRow(4).getCell(i+1).value = h);
+    xHeaderRow(ws2, 4, cols2.length);
+    r = 5;
+    rows_.forEach((rr, idx) => {
+      const c = calcRow(rr);
+      const row = ws2.getRow(r);
+      row.getCell(1).value = rr.nome;
+      row.getCell(2).value = rr.matricula;
+      row.getCell(3).value = rr.nascimento;
+      row.getCell(4).value = rr.admissao;
+      row.getCell(5).value = rr.departamento;
+      row.getCell(6).value = ESCALA_LABEL_X[rr.escala] || rr.escala;
+      row.getCell(7).value = rr.diasUteis;
+      row.getCell(8).value = rr.faltas;
+      row.getCell(9).value = rr.menos4h;
+      row.getCell(10).value = feriasText(rr);
+      row.getCell(10).alignment = {wrapText:true};
+      row.getCell(11).value = rr.dsr;
+      // Quant. dias: dias úteis - faltas - <4h10 + DSR (VT usa direto os dias úteis, que já vêm do R09)
+      row.getCell(12).value = { formula: `IF(F${r}="Técnico VT",G${r},MAX(0,G${r}-H${r}-I${r}+K${r}))`, result: c.quantDias };
+      row.getCell(13).value = rr.valorDia;
+      row.getCell(13).numFmt = '#,##0.00';
+      row.getCell(14).value = { formula: `L${r}*M${r}`, result: Number(c.total.toFixed(2)) };
+      row.getCell(14).numFmt = '#,##0.00';
+      row.getCell(15).value = { formula: `N${r}*$${copartCell}`, result: Number(c.desc.toFixed(2)) };
+      row.getCell(15).numFmt = '#,##0.00';
+      row.getCell(16).value = rr.obs;
+      row.getCell(16).alignment = {wrapText:true};
+      xBodyRow(ws2, r, cols2.length, idx % 2 === 1);
+      row.getCell(6).fill = {type:'pattern', pattern:'solid', fgColor:{argb: ESCALA_FILL[rr.escala] || XCOL.white}};
+      if(rr.flag){ row.getCell(6).font = {bold:true, size:10, name:'Calibri', color:{argb:XCOL.amber}}; }
+      if(feriasText(rr)){
+        row.getCell(10).fill = {type:'pattern', pattern:'solid', fgColor:{argb:XCOL.blueSoft}};
+        row.getCell(10).font = {size:10, name:'Calibri', color:{argb:XCOL.navy}, italic:true};
+      }
+      r++;
+    });
+    const lastRow2 = r - 1;
+    ws2.mergeCells(r,1,r,11);
+    ws2.getRow(r).getCell(1).value = 'TOTAL GERAL';
+    ws2.getRow(r).getCell(12).value = { formula: `SUM(L5:L${lastRow2})` };
+    ws2.getRow(r).getCell(14).value = { formula: `SUM(N5:N${lastRow2})` };
+    ws2.getRow(r).getCell(14).numFmt = '#,##0.00';
+    ws2.getRow(r).getCell(15).value = { formula: `SUM(O5:O${lastRow2})` };
+    ws2.getRow(r).getCell(15).numFmt = '#,##0.00';
+    xTotalRow(ws2, r, cols2.length);
+    ws2.views = [{state:'frozen', ySplit:4}];
+    ws2.autoFilter = `A4:${colLetter(cols2.length)}4`;
+
+    // ================= ABA 3 — R09 Detalhado (com grifos) =================
+    const ws3 = wb.addWorksheet('R09 Detalhado');
+    const cols3 = ['Dia','Nome','Código','Entrada','Pausa','Retorno','Saída','Duração','Rotina Esperada','Obs','Classificação'];
+    ws3.columns = [{width:13},{width:28},{width:10},{width:9},{width:9},{width:9},{width:9},{width:9},{width:20},{width:24},{width:36}];
+    xTitle(ws3, `R09 DETALHADO · PERÍODO DE CONTAGEM${lastR09Periodo.min ? ' · '+fmtDate(lastR09Periodo.min)+' A '+fmtDate(lastR09Periodo.max) : ''}`, cols3.length);
+
+    const legenda = [
+      [XCOL.redSoft, 'Desconta 1 dia — falta / atestado / suspensão / banco de horas / licença'],
+      [XCOL.amberSoft, 'Desconta 1 dia — menos de 4h10 trabalhadas'],
+      [XCOL.greenSoft, 'Soma 1 dia — trabalhou em folga, domingo ou feriado (DSR)'],
+      [XCOL.blueSoft, 'Férias no período — não desconta nem soma, só registro'],
+      [XCOL.greySoft, 'Atestado/licença caiu num domingo ou folga — não desconta'],
+    ];
+    let lr = 2;
+    legenda.forEach(([fill, text]) => {
+      ws3.getCell(lr,1).fill = {type:'pattern', pattern:'solid', fgColor:{argb:fill}};
+      ws3.getCell(lr,1).border = XBORDER;
+      ws3.mergeCells(lr,2,lr,cols3.length);
+      ws3.getCell(lr,2).value = text;
+      ws3.getCell(lr,2).font = {italic:true, size:9.5, color:{argb:XCOL.grey}};
+      ws3.getRow(lr).height = 15;
+      lr++;
+    });
+    const hdrRow3 = lr + 1;
+    cols3.forEach((h,i) => ws3.getRow(hdrRow3).getCell(i+1).value = h);
+    xHeaderRow(ws3, hdrRow3, cols3.length);
+
+    r = hdrRow3 + 1;
+    if(lastR09Rows.length === 0){
+      ws3.mergeCells(r,1,r,cols3.length);
+      ws3.getCell(r,1).value = 'Nenhum R09 importado ainda — importe na etapa 2 para preencher esta aba.';
+      ws3.getCell(r,1).font = {italic:true, color:{argb:XCOL.grey}};
+    } else {
+      const corFill = {desconto:XCOL.redSoft, menos4h:XCOL.amberSoft, soma:XCOL.greenSoft, ferias:XCOL.blueSoft, folga_motivo:XCOL.greySoft};
+      lastR09Rows.forEach(d => {
+        const row = ws3.getRow(r);
+        row.getCell(1).value = d.dia; row.getCell(2).value = d.nome; row.getCell(3).value = d.codigo;
+        row.getCell(4).value = d.entrada; row.getCell(5).value = d.pausa; row.getCell(6).value = d.retorno;
+        row.getCell(7).value = d.saida; row.getCell(8).value = d.duracao; row.getCell(9).value = d.rotina;
+        row.getCell(10).value = d.obs; row.getCell(11).value = d.classificacaoLabel;
+        const fill = corFill[d.cor];
+        for(let c=1;c<=cols3.length;c++){
+          const cell = row.getCell(c);
+          cell.font = {size:10, name:'Calibri'};
+          cell.border = XBORDER;
+          if(fill) cell.fill = {type:'pattern', pattern:'solid', fgColor:{argb:fill}};
+        }
+        r++;
+      });
+    }
+    ws3.views = [{state:'frozen', ySplit:hdrRow3}];
+    ws3.autoFilter = `A${hdrRow3}:${colLetter(cols3.length)}${hdrRow3}`;
+
+    const buf = await wb.xlsx.writeBuffer();
+    const blob = new Blob([buf], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `VR-${mesStr}.xlsx`; a.click();
+    URL.revokeObjectURL(url);
+  }
+  $('exportXlsx').onclick = () => { exportXlsxStyled(); };
+
+  // ---------- IMPORTAÇÃO ----------
+
+  function normName(n){ return (n||'').trim().toLowerCase(); }
+  function sheetToObjects(ws){ return XLSX.utils.sheet_to_json(ws, {defval:''}); }
+  function readWorkbook(file, cb){
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try{ const data = new Uint8Array(e.target.result); const wb = XLSX.read(data, {type:'array', cellDates:true}); cb(null, wb); }
+      catch(err){ cb(err); }
+    };
+    reader.readAsArrayBuffer(file);
+  }
+  function fmtDateCell(v){ if(v instanceof Date) return fmtDate(v); return v || ''; }
+  function parseBrDate(v){
+    if(v instanceof Date) return v;
+    const s = String(v||'').trim();
+    const m = s.match(/(\d{1,2})\/(\d{1,2})\/(\d{2,4})/);
+    if(!m) return null;
+    let yy = m[3].length===2 ? 2000+parseInt(m[3],10) : parseInt(m[3],10);
+    return new Date(yy, parseInt(m[2],10)-1, parseInt(m[1],10));
+  }
+  function pick(row, candidates){
+    for(const c of candidates){
+      for(const k of Object.keys(row)){
+        if(k.toLowerCase().includes(c.toLowerCase())) return row[k];
+      }
+    }
+    return '';
+  }
+
+  // ---- Convenia ----
+  function inferEscala(dept){
+    const d = (dept||'').toUpperCase();
+    if(d.includes('VT')) return {escala:'vt', flag:false};
+    if(d.includes('ESTOQUE')) return {escala:'estoque', flag:false};
+    if(d === 'RH' || d.includes('ADMINISTRATIVO')) return {escala:'5x2', flag:false};
+    if(d.includes('COORDENA') || d.includes('GESTAO')) return {escala:'confianca', flag:false};
+    if(d === 'COP' || d.includes('INSTRUTOR') || d.includes('AUXILIAR TECNICO')) return {escala:'6x1', flag:true};
+    return {escala:'6x1', flag:false};
+  }
+
+  function handleConvenio(file){
+    readWorkbook(file, (err, wb) => {
+      if(err){ $('importSummaryBox').innerHTML = '<p class="import-note" style="color:var(--red);">Erro ao ler o Convenia: '+err.message+'</p>'; return; }
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const objRows = sheetToObjects(ws);
+      const {year, month} = getMesAno();
+      // "Novo" = admitido há no máximo ~1 mês antes do mês de carregamento (1º dia do mês anterior em diante)
+      const novoCutoff = new Date(year, month-2, 1);
+      let novos=0, atualizados=0;
+      objRows.forEach(row => {
+        const nome = String(pick(row, ['Nome do colaborador','Nome'])||'').trim();
+        if(!nome) return;
+        const cpf = String(pick(row, ['CPF'])||'').trim();
+        const nascimento = fmtDateCell(pick(row, ['Data de nascimento','nascimento']));
+        const cargo = String(pick(row, ['Cargo'])||'').trim();
+        const departamento = String(pick(row, ['Departamento'])||'').trim();
+        const admissaoRaw = pick(row, ['Data de admissão','admissao']);
+        const admissaoDate = parseBrDate(admissaoRaw);
+        const admissaoStr = fmtDateCell(admissaoRaw);
+        const {escala, flag} = inferEscala(departamento);
+        const isNovo = admissaoDate && admissaoDate >= novoCutoff;
+
+        let target = rows.find(r => cpf && r.matricula && r.matricula.trim()===cpf.trim());
+        if(!target) target = rows.find(r => normName(r.nome) === normName(nome));
+
+        if(target){
+          target.matricula = target.matricula || cpf;
+          if(!target._touchedEscala){ target.escala = escala; target.flag = flag; }
+          target._justImported = true;
+          atualizados++;
+        } else {
+          target = addRow({nome, matricula:cpf, escala, flag});
+          target._justImported = true;
+          novos++;
+        }
+        target.cnpj = String(pick(row, ['CNPJ'])||'').trim() || target.cnpj;
+        target.nascimento = nascimento || target.nascimento;
+        target.admissao = admissaoStr || target.admissao;
+        target.cargo = cargo || target.cargo;
+        target.departamento = departamento || target.departamento;
+        setObsSegment(target, 'Cargo', `${cargo}${departamento ? ' · '+departamento : ''}`);
+        setObsSegment(target, 'Admissão', isNovo ? `Novo — admissão em ${admissaoStr}` : '');
+        setObsSegment(target, 'Escala', flag ? 'Confirmar escala' : '');
+      });
+      renderRows();
+      const box = $('importSummaryBox');
+      box.innerHTML = `<div class="import-note" style="margin-top:16px;"><b>${novos} novo(s)</b> e <b>${atualizados} atualizado(s)</b> a partir do Convenia (${objRows.length} linhas lidas).</div>`;
+    });
+  }
+
+  // ---- R09 ----
+  function parseDuracaoToMinutes(str){
+    if(!str) return null;
+    str = String(str).trim();
+    if(!str) return null;
+    const m = str.match(/^(\d{1,3}):(\d{2})/);
+    if(!m) return null;
+    return parseInt(m[1],10)*60 + parseInt(m[2],10);
+  }
+
+  const MOTIVO_LABEL = {
+    falta:'Falta', atestado:'Atestado', suspensao:'Suspensão disciplinar',
+    banco_horas:'Banco de horas', licenca:'Licença'
+  };
+
+  function parseDiaDate(diaStr){
+    const dm = String(diaStr||'').match(/(\d{2})\/(\d{2})\/(\d{2,4})/);
+    if(!dm) return null;
+    let yy = dm[3].length===2 ? 2000+parseInt(dm[3],10) : parseInt(dm[3],10);
+    return new Date(yy, parseInt(dm[2],10)-1, parseInt(dm[1],10));
+  }
+
+  function classifyDay(row, escala){
+    const rotina = String(row['Rotina Esperada']||'').trim();
+    const rotinaLower = rotina.toLowerCase();
+    const obs = String(row['Obs']||'').toLowerCase();
+    const entrada = String(row['Entrada']||'').trim();
+    const duracaoMin = parseDuracaoToMinutes(row['Duração']);
+    const isFolga = rotina === 'Folga';
+    const isFerias = rotinaLower.includes('féria') || rotinaLower.includes('feria') || obs.includes('féria') || obs.includes('feria');
+
+    // Férias aparece na própria "Rotina Esperada" no PontoTel — tratar antes de tudo,
+    // nunca como falta e nunca via abatimento (ver explicação no card "como funciona").
+    if(isFerias) return {tipo:'ferias_periodo', desconto:false, soma:false};
+
+    // Estoque: sábado é sempre turno reduzido (até 4h), programado e já não pago historicamente —
+    // não desconta. Só vira dia extra se ultrapassar 4h10 naquele sábado.
+    if(escala === 'estoque' && !isFolga){
+      const diaStr = String(row['Dia']||'');
+      const dm = diaStr.match(/(\d{2})\/(\d{2})\/(\d{2,4})/);
+      if(dm){
+        let yy = dm[3].length===2 ? 2000+parseInt(dm[3],10) : parseInt(dm[3],10);
+        const d = new Date(yy, parseInt(dm[2],10)-1, parseInt(dm[1],10));
+        if(d.getDay() === 6){
+          if(duracaoMin !== null && duracaoMin >= 250) return {tipo:'sabado_extra', desconto:false, soma:true};
+          return {tipo:'sabado_padrao', desconto:false, soma:false};
+        }
+      }
+    }
+
+    let motivo = null;
+    if(obs.includes('licença') || obs.includes('licenca')) motivo = 'licenca';
+    else if(obs.includes('atestado')) motivo = 'atestado';
+    else if(obs.includes('suspens')) motivo = 'suspensao';
+    else if(obs.includes('banco de hora') || obs.includes('banco hora') || obs.includes(' bh ')) motivo = 'banco_horas';
+    else if(obs.includes('falta')) motivo = 'falta';
+
+    // Atestado/licença que cai num domingo nunca desconta: o colaborador já não receberia
+    // VR nesse dia por ser folga, mesmo que o PontoTel não marque "Folga" na Rotina Esperada
+    // (às vezes o próprio atestado sobrescreve esse campo). Vale pra qualquer escala; no VT
+    // (que conta só dias trabalhados) isso já não muda nada de qualquer forma.
+    const isDomingoAtestadoOuLicenca = !isFolga && (motivo === 'atestado' || motivo === 'licenca') && (() => {
+      const d = parseDiaDate(row['Dia']);
+      return d && d.getDay() === 0;
+    })();
+
+    if(isFolga || isDomingoAtestadoOuLicenca){
+      if(entrada || (duracaoMin && duracaoMin>0)) return {tipo:'dsr_trabalhado', desconto:false, soma:true};
+      if(motivo) return {tipo:'folga_com_motivo', desconto:false, soma:false, motivo};
+      return {tipo:'folga_normal', desconto:false, soma:false};
+    }
+    if(motivo) return {tipo:motivo, desconto:true, soma:false};
+    if(!entrada && (duracaoMin === null || duracaoMin === 0)) return {tipo:'falta', desconto:true, soma:false};
+    if(duracaoMin !== null && duracaoMin < 250) return {tipo:'menos_4h10', desconto:true, soma:false};
+    return {tipo:'trabalhou_normal', desconto:false, soma:false};
+  }
+
+  function onlyDigits(s){ return String(s||'').replace(/\D/g,''); }
+
+  function escalaForR09Row(nome, codigo, cpf){
+    const cpfDigits = onlyDigits(cpf);
+    let r = cpfDigits ? rows.find(x => onlyDigits(x.matricula) === cpfDigits) : null;
+    if(!r && codigo) r = rows.find(x => x.matricula && x.matricula.trim()===codigo.trim());
+    if(!r) r = rows.find(x => normName(x.nome) === normName(nome));
+    return r ? r.escala : '6x1';
+  }
+
+  function processR09(objRows){
+    const byEmployee = {};
+    let minDate=null, maxDate=null;
+    const detalhado = [];
+    objRows.forEach(row => {
+      const nome = String(row['Nome']||'').trim();
+      if(!nome) return;
+      const codigo = String(row['Código']||row['Codigo']||'').trim();
+      const cpf = String(row['CPF']||'').trim();
+      const key = cpf ? ('cpf:'+onlyDigits(cpf)) : (codigo ? (nome+'|'+codigo) : nome);
+      if(!byEmployee[key]) byEmployee[key] = {nome, matricula:codigo, cpf, faltas:0, menos4h:0, dsr:0, feriasCount:0, diasTrabalhados:0, grupos:{}};
+      const escalaEmp = escalaForR09Row(nome, codigo, cpf);
+      const cls = classifyDay(row, escalaEmp);
+      const emp = byEmployee[key];
+      if(cls.tipo === 'trabalhou_normal' || cls.soma){ emp.diasTrabalhados++; }
+
+      const diaStr = String(row['Dia']||'');
+      const dm = diaStr.match(/(\d{2})\/(\d{2})\/(\d{2,4})/);
+      const shortDate = dm ? `${dm[1]}/${dm[2]}` : diaStr;
+      if(dm){
+        let yy = dm[3].length===2 ? (2000+parseInt(dm[3],10)) : parseInt(dm[3],10);
+        const d = new Date(yy, parseInt(dm[2],10)-1, parseInt(dm[1],10));
+        if(!minDate || d<minDate) minDate=d;
+        if(!maxDate || d>maxDate) maxDate=d;
+      }
+
+      let label = null;
+      let corCategoria = null;
+      if(cls.desconto){
+        label = MOTIVO_LABEL[cls.tipo] || cls.tipo;
+        corCategoria = (cls.tipo === 'menos_4h10') ? 'menos4h' : 'desconto';
+        if(cls.tipo === 'falta') emp.faltas++;
+        else if(cls.tipo === 'menos_4h10'){ emp.menos4h++; label = 'Menos de 4h10'; }
+        else emp.faltas++;
+      } else if(cls.soma){
+        emp.dsr++;
+        label = (cls.tipo === 'sabado_extra') ? 'Sábado trabalhado (>4h10) — dia extra' : 'DSR/feriado trabalhado';
+        corCategoria = 'soma';
+      } else if(cls.tipo === 'folga_com_motivo'){
+        label = `${MOTIVO_LABEL[cls.motivo] || cls.motivo} em domingo/folga — não descontado`;
+        corCategoria = 'folga_motivo';
+      } else if(cls.tipo === 'ferias_periodo'){
+        label = 'Férias no período (não contabilizado)';
+        corCategoria = 'ferias';
+        emp.feriasCount++;
+      }
+      if(label){
+        if(!emp.grupos[label]) emp.grupos[label] = [];
+        emp.grupos[label].push(shortDate);
+      }
+      detalhado.push({
+        dia: row['Dia']||'', nome, codigo, entrada: row['Entrada']||'', pausa: row['Pausa']||'',
+        retorno: row['Retorno']||'', saida: row['Saída']||'', duracao: row['Duração']||'',
+        rotina: row['Rotina Esperada']||'', obs: row['Obs']||'',
+        classificacaoLabel: label || (cls.tipo === 'folga_normal' ? 'Folga' : 'Trabalhou normalmente'),
+        cor: corCategoria
+      });
+    });
+    lastR09Rows = detalhado;
+    lastR09Periodo = {min:minDate, max:maxDate};
+    return {byEmployee, minDate, maxDate};
+  }
+
+  function summaryFromGrupos(grupos){
+    const entries = Object.entries(grupos);
+    if(!entries.length) return 'Sem ocorrências no período';
+    return entries.map(([label, dates]) => `${label}: ${dates.join(', ')}`).join(' · ');
+  }
+
+  function mergeR09(byEmployee){
+    let novos=0, atualizados=0;
+    const summary = [];
+    rows.forEach(r => r._justImported=false);
+    Object.values(byEmployee).forEach(emp => {
+      const cpfDigits = onlyDigits(emp.cpf);
+      let target = cpfDigits ? rows.find(r => onlyDigits(r.matricula) === cpfDigits) : null;
+      if(!target && emp.matricula) target = rows.find(r => r.matricula && r.matricula.trim()===emp.matricula.trim());
+      if(!target) target = rows.find(r => normName(r.nome||'') === normName(emp.nome));
+      const r09Text = summaryFromGrupos(emp.grupos);
+      let status;
+      if(target){
+        target.faltas = emp.faltas; target.menos4h = emp.menos4h; target.dsr = emp.dsr;
+        target.feriasR09 = emp.feriasCount;
+        if(target.escala === 'vt'){ target.diasUteis = emp.diasTrabalhados; }
+        if(!target.matricula) target.matricula = emp.cpf || emp.matricula;
+        setObsSegment(target, 'R09', r09Text);
+        target._justImported = true;
+        status='upd'; atualizados++;
+      } else {
+        target = addRow({nome: emp.nome, matricula: emp.cpf || emp.matricula, escala:'6x1', faltas: emp.faltas, menos4h: emp.menos4h, dsr: emp.dsr, feriasR09: emp.feriasCount});
+        setObsSegment(target, 'R09', r09Text);
+        target._justImported = true;
+        status='new'; novos++;
+      }
+      summary.push({nome: emp.nome, matricula: emp.matricula, faltas: emp.faltas, menos4h: emp.menos4h, dsr: emp.dsr, texto:r09Text, status});
+    });
+    renderRows();
+    return {novos, atualizados, summary};
+  }
+
+  function showR09Summary(result, minDate, maxDate){
+    const box = $('importSummaryBox');
+    const periodoTxt = (minDate && maxDate) ? `${fmtDate(minDate)} a ${fmtDate(maxDate)}` : '—';
+    let html = `<div class="import-note" style="margin-top:16px;"><b>${result.novos} novo(s)</b> e <b>${result.atualizados} atualizado(s)</b> a partir do R09 · período do arquivo: ${periodoTxt}</div>`;
+    html += `<div class="import-summary"><table><thead><tr><th>Nome</th><th>Matrícula</th><th>Resumo</th><th></th></tr></thead><tbody>`;
+    result.summary.forEach(s => {
+      html += `<tr><td>${s.nome}</td><td>${s.matricula||'—'}</td><td>${s.texto}</td><td><span class="badge ${s.status}">${s.status==='new'?'novo':'atualizado'}</span></td></tr>`;
+    });
+    html += `</tbody></table></div>`;
+    box.innerHTML = html;
+  }
+
+  function handleR09(file){
+    readWorkbook(file, (err, wb) => {
+      if(err){ $('importSummaryBox').innerHTML = '<p class="import-note" style="color:var(--red);">Erro ao ler o R09: '+err.message+'</p>'; return; }
+      const sheetName = wb.SheetNames.includes('Resumo') ? 'Resumo' : wb.SheetNames[0];
+      const objRows = sheetToObjects(wb.Sheets[sheetName]);
+      const {byEmployee, minDate, maxDate} = processR09(objRows);
+      if(Object.keys(byEmployee).length === 0){
+        $('importSummaryBox').innerHTML = '<p class="import-note" style="color:var(--red);">Não encontrei colunas de Nome/Dia reconhecíveis nesse arquivo. Confira se é o export do R09.</p>';
+        return;
+      }
+      const result = mergeR09(byEmployee);
+      showR09Summary(result, minDate, maxDate);
+    });
+  }
+
+  function wireDropZone(zoneId, browseId, inputId, handler){
+    const zone = $(zoneId), input = $(inputId);
+    $(browseId).onclick = () => input.click();
+    input.addEventListener('change', () => { if(input.files[0]) handler(input.files[0]); });
+    ['dragover','dragenter'].forEach(evt => zone.addEventListener(evt, e => { e.preventDefault(); zone.classList.add('drag'); }));
+    ['dragleave','drop'].forEach(evt => zone.addEventListener(evt, e => { e.preventDefault(); zone.classList.remove('drag'); }));
+    zone.addEventListener('drop', e => { const f = e.dataTransfer.files[0]; if(f) handler(f); });
+  }
+  wireDropZone('dropZoneConv','browseConv','fileInputConv', handleConvenio);
+  wireDropZone('dropZoneR09','browseR09','fileInputR09', handleR09);
+
+  $('resetData').onclick = () => {
+    if(rows.length && !confirm(`Isso vai apagar os ${rows.length} colaborador(es) atuais da tabela para você importar um arquivo novo do zero. Os feriados cadastrados e os parâmetros (valor, coparticipação, CNPJ) continuam. Confirmar?`)) return;
+    rows = [];
+    rowSeq = 0;
+    $('importSummaryBox').innerHTML = '';
+    addRow({nome:''});
+  };
+
+  // init
+  refreshInfoStrip();
+  renderFeriados();
+  addRow({nome:''});
+})();
+</script>
+
+</body>
+</html>
