@@ -162,6 +162,20 @@
   .filter-check input{width:auto;}
   .filter-check small{color:#9aa0bd;}
   .filter-count{font-size:12px; color:var(--muted); margin-left:auto; white-space:nowrap;}
+
+  .checklist-items{display:flex; flex-direction:column; gap:10px;}
+  .check-item{display:flex; align-items:flex-start; gap:12px; padding:14px 16px; border:1.5px solid var(--border); border-radius:var(--radius-sm); cursor:pointer; transition:border-color .12s, background .12s; background:#fbfbfe;}
+  .check-item input[type=checkbox]{width:18px; height:18px; margin-top:2px; accent-color:var(--blue); flex:0 0 18px; cursor:pointer;}
+  .check-item b{display:block; font-size:13.5px; margin-bottom:3px; color:var(--text);}
+  .check-item span{display:block; font-size:12px; color:var(--muted); line-height:1.5;}
+  .check-item.checked{border-color:var(--green); background:var(--green-soft);}
+  .checklist-status{margin-top:16px; padding:12px 16px; border-radius:var(--radius-sm); font-size:13px; font-weight:600; display:flex; align-items:center; gap:8px;}
+  .checklist-status.incomplete{background:var(--amber-soft); color:#a35c00;}
+  .checklist-status.complete{background:var(--green-soft); color:var(--green);}
+  .lock-banner{display:none; align-items:center; gap:10px; background:var(--navy-deep); color:#fff; padding:14px 20px; border-radius:var(--radius); margin-bottom:20px; font-size:13px; font-weight:600;}
+  #lockedSection.locked > .card,
+  #lockedSection.locked > .totals-bar{opacity:.4; pointer-events:none; filter:grayscale(.4);}
+  #lockedSection.locked .lock-banner{display:flex;}
   @media (max-width:640px){
     header{padding:28px 18px;}
     h1{font-size:26px;}
@@ -209,7 +223,39 @@
   </details>
 
   <div class="card">
-    <h2><span class="num">1</span>Parâmetros do carregamento</h2>
+    <h2><span class="num">1</span>Checklist antes de iniciar o carregamento</h2>
+    <p class="hint" style="margin:0 0 16px;">Confirme os três pontos abaixo <b>antes</b> de preencher os parâmetros ou importar qualquer arquivo. Isso evita carregar VR com base em cadastro desatualizado.</p>
+    <div class="checklist-items">
+      <label class="check-item" id="checkItem1">
+        <input type="checkbox" id="chkPonto">
+        <div>
+          <b>1. Cadastros do PontoTel conferidos</b>
+          <span>Extraia o <b>R13</b> (relatório com informações dos empregados) do PontoTel e confirme que todos os colaboradores estão cadastrados no local de trabalho (posto/base) correto.</span>
+        </div>
+      </label>
+      <label class="check-item" id="checkItem2">
+        <input type="checkbox" id="chkConvenia">
+        <div>
+          <b>2. Convenia conferido</b>
+          <span>Extraia o relatório do Convenia (sistema de RH) e confirme que todos estão corretos em departamento, centro de custo e cargo.</span>
+        </div>
+      </label>
+      <label class="check-item" id="checkItem3">
+        <input type="checkbox" id="chkDesligados">
+        <div>
+          <b>3. Sem desligados pendentes</b>
+          <span>Confirme que não há colaborador desligado aparecendo no PontoTel nem no Convenia.</span>
+        </div>
+      </label>
+    </div>
+    <div class="checklist-status" id="checklistStatus"></div>
+  </div>
+
+  <div id="lockedSection">
+  <div class="lock-banner" id="lockBanner">🔒 Complete o checklist acima para liberar os parâmetros, a importação e a tabela de colaboradores.</div>
+
+  <div class="card">
+    <h2><span class="num">2</span>Parâmetros do carregamento</h2>
     <div class="grid-config">
       <div>
         <label for="mesCarregamento">Mês de carregamento</label>
@@ -248,7 +294,7 @@
 
   <div class="card">
     <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; margin-bottom:18px;">
-      <h2 style="margin-bottom:0;"><span class="num">2</span>Importar dados</h2>
+      <h2 style="margin-bottom:0;"><span class="num">3</span>Importar dados</h2>
       <button class="btn-purple" id="resetData" title="Apaga todos os colaboradores da tabela para começar um novo carregamento do zero">↺ Zerar e importar novo arquivo</button>
     </div>
     <div class="import-grid">
@@ -276,7 +322,7 @@
   </div>
 
   <div class="card">
-    <h2><span class="num">3</span>Colaboradores</h2>
+    <h2><span class="num">4</span>Colaboradores</h2>
     <div class="filter-bar">
       <input type="text" id="filterQ" placeholder="Buscar por nome ou CPF/matrícula…">
       <select id="filterEscala">
@@ -331,6 +377,8 @@
     <div class="tot-item"><span>Desconto coparticipação</span><b id="totDesc">R$ 0,00</b></div>
     <div class="spacer"></div>
     <div class="tot-item final"><span>Valor final a carregar</span><b id="totFinal">R$ 0,00</b></div>
+  </div>
+
   </div>
 
 </div>
@@ -1194,10 +1242,34 @@
     addRow({nome:''});
   };
 
+  // ---------- checklist pré-carregamento ----------
+  function updateChecklistLock(){
+    const boxes = [
+      {input: $('chkPonto'), item: $('checkItem1')},
+      {input: $('chkConvenia'), item: $('checkItem2')},
+      {input: $('chkDesligados'), item: $('checkItem3')}
+    ];
+    boxes.forEach(b => b.item.classList.toggle('checked', b.input.checked));
+    const done = boxes.every(b => b.input.checked);
+    const locked = $('lockedSection');
+    const statusBox = $('checklistStatus');
+    if(done){
+      locked.classList.remove('locked');
+      statusBox.className = 'checklist-status complete';
+      statusBox.textContent = '✓ Checklist completo — carregamento liberado.';
+    } else {
+      locked.classList.add('locked');
+      statusBox.className = 'checklist-status incomplete';
+      statusBox.textContent = '⚠ Complete os 3 itens acima para liberar os parâmetros, a importação e a tabela de colaboradores.';
+    }
+  }
+  ['chkPonto','chkConvenia','chkDesligados'].forEach(id => $(id).addEventListener('change', updateChecklistLock));
+
   // init
   refreshInfoStrip();
   renderFeriados();
   addRow({nome:''});
+  updateChecklistLock();
 })();
 </script>
 
